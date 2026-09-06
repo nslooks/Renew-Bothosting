@@ -98,6 +98,7 @@ git push origin acc1 acc2 acc3 acc4 acc5
 | TG_BOT_TOKEN / TG_CHAT_ID | TG 通知（所有账号共用） |
 
 > Secret 名不区分大小写，统一用大写即可。脚本续期成功后会自动把新 token 写回对应的 `ACC1_SESSION_TOKEN` 这类 Secret，无需手动维护。
+> 💡 `main` 分支兼容单账号模式：自动回退读取不带前缀的 `SESSION_TOKEN` / `DISCORD_TOKEN` / `EMAIL` / `NODE_LINK` / `GH_TOKEN`（与旧版配置一致），多账号只走 `acc1`~`acc5` 分支。
 
 ### 3. Cloudflare Worker 定时触发
 

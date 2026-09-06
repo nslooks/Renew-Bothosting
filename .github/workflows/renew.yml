@@ -28,18 +28,18 @@ jobs:
       - name: ⚙ 设置代理 (sing-box)
         continue-on-error: true
         env:
-          NODE_LINK: ${{ secrets[format('{0}_NODE_LINK', github.ref_name)] }}
+          NODE_LINK: ${{ secrets[format('{0}_NODE_LINK', github.ref_name)] || secrets.NODE_LINK }}
         run: |
           bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
 
       - name: 🚀 运行续期脚本
         env:
-          # 按分支名自动读取对应前缀的 Secret:分支 acc1 -> ACC1_SESSION_TOKEN / ACC1_DISCORD_TOKEN / ACC1_EMAIL / ACC1_GH_TOKEN
-          EMAIL: ${{ secrets[format('{0}_EMAIL', github.ref_name)] }}
-          GH_TOKEN: ${{ secrets[format('{0}_GH_TOKEN', github.ref_name)] }}
-          SESSION_TOKEN: ${{ secrets[format('{0}_SESSION_TOKEN', github.ref_name)] }}
-          DISCORD_TOKEN: ${{ secrets[format('{0}_DISCORD_TOKEN', github.ref_name)] }}
-          SESSION_SECRET_NAME: ${{ format('{0}_SESSION_TOKEN', github.ref_name) }}
+          # 分支 acc1~acc5 读取对应前缀(ACC1_*);main 分支回退到不带前缀的旧变量名(SESSION_TOKEN 等)
+          EMAIL: ${{ secrets[format('{0}_EMAIL', github.ref_name)] || secrets.EMAIL }}
+          GH_TOKEN: ${{ secrets[format('{0}_GH_TOKEN', github.ref_name)] || secrets.GH_TOKEN }}
+          SESSION_TOKEN: ${{ secrets[format('{0}_SESSION_TOKEN', github.ref_name)] || secrets.SESSION_TOKEN }}
+          DISCORD_TOKEN: ${{ secrets[format('{0}_DISCORD_TOKEN', github.ref_name)] || secrets.DISCORD_TOKEN }}
+          SESSION_SECRET_NAME: ${{ secrets[format('{0}_SESSION_TOKEN', github.ref_name)] != '' && format('{0}_SESSION_TOKEN', github.ref_name) || 'SESSION_TOKEN' }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
