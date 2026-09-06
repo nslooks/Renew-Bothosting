@@ -20,6 +20,9 @@ if DISCORD_TOKEN:
     _parts = DISCORD_TOKEN.split(",", 1)
     DC_TOKEN = _parts[-1].strip()
 
+# 自动更新 session_token 时写入的 Secret 名(多分支场景下按分支前缀区分,如 ACC1_SESSION_TOKEN)
+SESSION_SECRET_NAME = os.environ.get("SESSION_SECRET_NAME") or "SESSION_TOKEN"
+
 if not SESSION_TOKEN and not DC_TOKEN:
     print("ℹ️ 未配置 SESSION_TOKEN 和 DISCORD_TOKEN,脚本终止。")
     sys.exit(1)
@@ -576,15 +579,15 @@ def main():
         old_token = SESSION_TOKEN
 
         if should_update_cookie(new_token, old_token, token_expiry):
-            print("🔄 SESSION_TOKEN 需要更新")
+            print(f"🔄 SESSION_TOKEN 需要更新,将写入 Secret: {SESSION_SECRET_NAME}")
             if GH_TOKEN:
-                if update_github_secret("SESSION_TOKEN", new_token):
-                    print("✅ SESSION_TOKEN 更新成功")
+                if update_github_secret(SESSION_SECRET_NAME, new_token):
+                    print(f"✅ {SESSION_SECRET_NAME} 更新成功")
                 else:
                     print("⚠️ 更新失败，请检查 GH_TOKEN 权限")
             else:
                 print("⚠️ 未设置 GH_TOKEN，无法自动更新")
-                print(f"📋 请手动设置 SESSION_TOKEN = {new_token[:4]}...{new_token[-4:]}")
+                print(f"📋 请手动设置 {SESSION_SECRET_NAME} = {new_token[:4]}...{new_token[-4:]}")
         else:
             print("✅ SESSION_TOKEN 无需更新")
         

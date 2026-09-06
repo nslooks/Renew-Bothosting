@@ -1,8 +1,6 @@
 name: Auto Renew Bot-hosting
 
 on:
-  schedule:
-    - cron: '26 3 * * *' # 每天UTC 1点 (北京时间9点, 一般都会推迟),自行根据服务到期时间调整
   workflow_dispatch:
 
 jobs:
@@ -30,16 +28,18 @@ jobs:
       - name: ⚙ 设置代理 (sing-box)
         continue-on-error: true
         env:
-          NODE_LINK: ${{ secrets.NODE_LINK }}
+          NODE_LINK: ${{ secrets[format('{0}_NODE_LINK', github.ref_name)] }}
         run: |
           bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
 
       - name: 🚀 运行续期脚本
         env:
-          EMAIL: ${{ secrets.EMAIL }}
+          # 按分支名自动读取对应前缀的 Secret:分支 acc1 -> ACC1_SESSION_TOKEN / ACC1_DISCORD_TOKEN / ACC1_EMAIL
+          EMAIL: ${{ secrets[format('{0}_EMAIL', github.ref_name)] }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          SESSION_TOKEN: ${{ secrets.SESSION_TOKEN }}
+          SESSION_TOKEN: ${{ secrets[format('{0}_SESSION_TOKEN', github.ref_name)] }}
+          DISCORD_TOKEN: ${{ secrets[format('{0}_DISCORD_TOKEN', github.ref_name)] }}
+          SESSION_SECRET_NAME: ${{ format('{0}_SESSION_TOKEN', github.ref_name) }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
@@ -59,7 +59,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          runs=$(gh run list --workflow="${{ github.workflow }}" --limit=100 --json databaseId --jq '.[].databaseId')
+          # 只清理当前分支的运行记录,避免误删其他账号(分支)的记录
+          runs=$(gh run list --workflow="${{ github.workflow }}" --branch="${{ github.ref_name }}" --limit=100 --json databaseId --jq '.[].databaseId')
           count=0
           for run_id in $runs; do
             count=$((count + 1))
