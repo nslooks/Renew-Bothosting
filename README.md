@@ -89,12 +89,13 @@ git push origin acc1 acc2 acc3 acc4 acc5
 | ACC1_DISCORD_TOKEN ~ ACC5_DISCORD_TOKEN | ✅ 必填 | 对应账号的 Discord Token，与 SESSION_TOKEN 二选一（建议都填） |
 | ACC1_EMAIL ~ ACC5_EMAIL | ❌ 可选 | 对应账号的通知邮箱 |
 | ACC1_NODE_LINK ~ ACC5_NODE_LINK | ❌ 可选 | 对应账号的代理链接（vless:// vmess:// trojan:// 等） |
+| ACC1_GH_TOKEN ~ ACC5_GH_TOKEN | ❌ 可选 | 对应账号的 GitHub token（ghp_ 开头，`repo` 权限），用于自动更新该账号的 session_token Secret |
 
 共享 Secret（所有账号共用一份）：
 
 | Secret 名称 | 说明 |
 |---|---|
-| GH_TOKEN / TG_BOT_TOKEN / TG_CHAT_ID | 自动更新 Secret、TG 通知（所有账号共用） |
+| TG_BOT_TOKEN / TG_CHAT_ID | TG 通知（所有账号共用） |
 
 > Secret 名不区分大小写，统一用大写即可。脚本续期成功后会自动把新 token 写回对应的 `ACC1_SESSION_TOKEN` 这类 Secret，无需手动维护。
 

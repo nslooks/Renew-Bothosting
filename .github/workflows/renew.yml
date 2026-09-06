@@ -34,9 +34,9 @@ jobs:
 
       - name: 🚀 运行续期脚本
         env:
-          # 按分支名自动读取对应前缀的 Secret:分支 acc1 -> ACC1_SESSION_TOKEN / ACC1_DISCORD_TOKEN / ACC1_EMAIL
+          # 按分支名自动读取对应前缀的 Secret:分支 acc1 -> ACC1_SESSION_TOKEN / ACC1_DISCORD_TOKEN / ACC1_EMAIL / ACC1_GH_TOKEN
           EMAIL: ${{ secrets[format('{0}_EMAIL', github.ref_name)] }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets[format('{0}_GH_TOKEN', github.ref_name)] }}
           SESSION_TOKEN: ${{ secrets[format('{0}_SESSION_TOKEN', github.ref_name)] }}
           DISCORD_TOKEN: ${{ secrets[format('{0}_DISCORD_TOKEN', github.ref_name)] }}
           SESSION_SECRET_NAME: ${{ format('{0}_SESSION_TOKEN', github.ref_name) }}
